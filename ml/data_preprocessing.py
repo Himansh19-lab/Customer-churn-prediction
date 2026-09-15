@@ -27,11 +27,9 @@ NUMERICAL_COL = [
 ]
 
 CATEGORICAL_COL = [
-    "gender",
     "seniorcitizen",
     "partner",
     "dependents",
-    "phoneservice",
     "multiplelines",
     "internetservice",
     "onlinesecurity",

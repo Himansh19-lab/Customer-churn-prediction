@@ -32,36 +32,6 @@ def load_data(file_path: str) -> pd.DataFrame:
         logger.error(f"An error occurred while loading data from {file_path}. Error: {e}")
         raise
 
-def removing_outliers(df: pd.DataFrame):
-    """
-    This method is for detecting and removing outliers
-    """
-
-    try:
-        numerical_col = ['tenure', 'monthlycharges', 'totalcharges']
-        outliers = []
-        for col in numerical_col:
-            Q1, Q3 = df[col].quantile([0.25, 0.75])
-            IQR = Q3 - Q1
-            lower_bound = Q1 - 1.5 * IQR
-            upper_bound = Q3 + 1.5 * IQR
-            outlier = ((df[col] > upper_bound ) | (df[col] < lower_bound)).sum()
-            df[col] = np.where(df[col] > upper_bound, upper_bound, df[col])
-            df[col] = np.where(df[col] < lower_bound, lower_bound, df[col])
-            outliers.append(outlier)
-            logger.info(f"{col} :  {outlier} outliers")
-
-        if any(outliers):
-            logger.info(f"Outlier successfully removed ")
-        else:
-            logger.info(f"No outliers found in data")
-        return df
-
-
-    except Exception as e:
-        logger.error(f"Unexpected error occured while removing outliers")
-        logger.error(f"Erorr : {e}")
-
 def remove_duplicate(df: pd.DataFrame) -> pd.DataFrame:
     """
     This method is check and remove duplicates in dataFrame
@@ -101,6 +71,25 @@ def check_impossible_data(df: pd.DataFrame):
         logger.error(e)
 
 
+def removing_irrelevant_feature(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    This method is used to droping the irrelevant feature
+
+    Args :
+        pd.DataFrame 
+    
+    Return: 
+        pd.DataFrame
+    """
+    try:
+        column_to_drop = ['gender','phoneservice']
+        df = df.drop(columns=column_to_drop)
+        logger.info(f'{column_to_drop} droped sucessfully')
+        return df
+    except Exception as e:
+        logger.error("Unexpected error occured during feature droping.. ")
+        logger.error(e)
+
 def get_data_clean(df: pd.DataFrame) -> pd.DataFrame:
     """
     This method is checking missing/duplicate/outlier data 
@@ -110,6 +99,7 @@ def get_data_clean(df: pd.DataFrame) -> pd.DataFrame:
         logger.info(f"Total Missing data {missing_data}")
         df = remove_duplicate(df)
         check_impossible_data(df)
+        df = removing_irrelevant_feature(df)
         return df
 
     except Exception as e:
