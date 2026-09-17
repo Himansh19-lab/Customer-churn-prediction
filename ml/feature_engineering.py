@@ -53,8 +53,8 @@ def creating_feature(df: pd.DataFrame) -> pd.DataFrame:
         (df['onlinebackup'] == 'Yes').astype(int) +
         (df['deviceprotection'] == 'Yes').astype(int) +
         (df['techsupport'] == 'Yes').astype(int) +
-        (df['streamingtv'] == 'Yes').astype(int) +
-        (df['streamingmovies'] == 'Yes').astype(int))
+        (df['streamingtv'] == 'Yes').astype(int)
+        )
         return df 
     except Exception as e:
         logger.error("Unexpected error occured while create a new feature")
