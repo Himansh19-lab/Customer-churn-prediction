@@ -37,9 +37,7 @@ CATEGORICAL_COL = [
     "deviceprotection",
     "techsupport",
     "streamingtv",
-    "streamingmovies",
     "contract",
-    "paperlessbilling",
     "paymentmethod"
 ]
 

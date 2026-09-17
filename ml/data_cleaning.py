@@ -82,7 +82,7 @@ def removing_irrelevant_feature(df: pd.DataFrame) -> pd.DataFrame:
         pd.DataFrame
     """
     try:
-        column_to_drop = ['gender','phoneservice']
+        column_to_drop = ['gender','phoneservice','streamingmovies','paperlessbilling']
         df = df.drop(columns=column_to_drop)
         logger.info(f'{column_to_drop} droped sucessfully')
         return df
