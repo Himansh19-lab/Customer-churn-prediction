@@ -106,7 +106,7 @@ def train_model(X_train, y_train, params):
         logger.error("Unexpected error occured while model training")
         logger.error(f"{e}")
 
-def save_model(pipeline, file_path):
+def save_model(model_artifact: dict, file_path):
     """
     This save_model function is responsible for saving the trained model 
 
@@ -130,16 +130,16 @@ def save_model(pipeline, file_path):
         logger.info("Start model saving ")
         os.makedirs(os.path.dirname(file_path), exist_ok=True)
 
-        joblib.dump(pipeline, file_path)
+        joblib.dump(model_artifact, file_path)
 
-        logger.info(f"pipeline  saved at {file_path}")
+        logger.info(f"Model artifact  saved at {file_path}")
 
     except FileNotFoundError as e:
         logger.error(f"File path not found {e}")
         raise
 
     except Exception as e:  
-        logger.error(f"Unexpected error during pipeline saving : {e}")
+        logger.error(f"Unexpected error during Model saving : {e}")
         raise
         
 
@@ -156,13 +156,19 @@ def main():
               'max_depth': 20, 
               'class_weight': 'balanced_subsample'}
 
+    threshold = 0.5799
+
     X_train, y_train = load_train_data(file_path)
     pipeline = train_model(X_train=X_train, y_train=y_train, params=model_params)
 
+    model_artifact = {
+         'pipeline' : pipeline,
+         'threshold' : threshold
+    }
     # 3. Saving model
     file_path = './models/churn_pipeline.joblib'
 
-    save_model(pipeline=pipeline, file_path=file_path)
+    save_model(model_artifact, file_path=file_path)
 
 if __name__ == "__main__":
      main()

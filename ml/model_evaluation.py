@@ -2,7 +2,7 @@
 import pandas as pd
 import os
 import pickle
-from sklearn.metrics import accuracy_score, precision_score, recall_score, roc_auc_score
+from sklearn.metrics import accuracy_score, precision_score, recall_score, roc_auc_score, f1_score, average_precision_score
 import json
 import joblib
 
@@ -80,7 +80,7 @@ def load_test_data(file_path: str) -> pd.DataFrame:
         raise
 
 
-def evaluate_model(pipeline, X_test, y_test):
+def evaluate_model(pipeline, X_test, y_test, threshold):
 
     """
     This evaluate_model function is responsible for evaluating the trained model using test data.
@@ -112,19 +112,26 @@ def evaluate_model(pipeline, X_test, y_test):
         
 
     try:
-        y_pred = pipeline.predict(X_test)
         y_pred_proba = pipeline.predict_proba(X_test)[:,1]
+        y_pred = (y_pred_proba >= threshold).astype(int)
 
         accuracy = accuracy_score(y_test, y_pred)
         precision = precision_score(y_test, y_pred)
         recall = recall_score(y_test, y_pred)
+        f1 = f1_score(y_test,y_pred)
+
+        # Probability based metrics
         auc = roc_auc_score(y_test, y_pred_proba)
+        pr_auc = average_precision_score(y_test, y_pred_proba)
+
 
         metrics_dict = {
             'accuracy': accuracy,
             'precision': precision,
             'recall': recall,
-            'auc': auc
+            'f1-score' : f1,
+            'roc-auc': auc,
+            'pr-auc' : pr_auc
         }
         logger.info('Model evaluation metrics calculated')
         logger.info(f"Evaluated metric : {metrics_dict}")
@@ -181,8 +188,10 @@ def main():
 
     try:
         # 1. Model loading 
-        model = load_model('./models/churn_pipeline.joblib')
+        model_artifact = load_model('./models/churn_pipeline.joblib')
 
+        model = model_artifact['pipeline']
+        threshold = model_artifact['threshold']
 
         file_path = "./data/train_test"
 
@@ -191,7 +200,7 @@ def main():
         logger.info("Test data loaded sucessfully")
 
         # 3. Model evaluation
-        metrics = evaluate_model(model, X_test, y_test)    
+        metrics = evaluate_model(model, X_test, y_test, threshold)    
 
         # 4. Model saved
         save_metrics(metrics, 'reports/metrics.json')
