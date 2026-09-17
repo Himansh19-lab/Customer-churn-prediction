@@ -1,6 +1,6 @@
 import pandas as pd
 from sklearn.model_selection import StratifiedKFold
-from sklearn.ensemble import GradientBoostingClassifier
+from sklearn.ensemble import RandomForestClassifier
 from sklearn.pipeline import Pipeline
 import os
 import joblib
@@ -37,7 +37,7 @@ def load_train_data(file_path: str) -> pd.DataFrame:
         raise
 
 def create_model(params: dict):
-     model = GradientBoostingClassifier(**params, random_state=42)
+     model = RandomForestClassifier(**params, random_state=42)
      return model
 
 def build_pipeline(params: dict):
@@ -148,16 +148,16 @@ def main():
     logger.info("Starting Model building ..")
     file_path = "./data/train_test"
 
-    gradient_params = {
-        "subsample": 0.85,
-        "n_estimators": 100,
-        "max_depth": 2,
-        "learning_rate": 0.1
-    }
 
+    model_params = {'n_estimators': 500, 
+              'min_samples_split': 2,
+              'min_samples_leaf': 10, 
+              'max_features': 'sqrt', 
+              'max_depth': 20, 
+              'class_weight': 'balanced_subsample'}
 
     X_train, y_train = load_train_data(file_path)
-    pipeline = train_model(X_train=X_train, y_train=y_train, params=gradient_params)
+    pipeline = train_model(X_train=X_train, y_train=y_train, params=model_params)
 
     # 3. Saving model
     file_path = './models/churn_pipeline.joblib'
