@@ -55,48 +55,16 @@ def creating_feature(df: pd.DataFrame) -> pd.DataFrame:
         (df['techsupport'] == 'Yes').astype(int) +
         (df['streamingtv'] == 'Yes').astype(int)
         )
+        column_oder = ['seniorcitizen', 'partner', 'dependents', 'tenure', 'multiplelines',
+       'internetservice', 'onlinesecurity', 'onlinebackup', 'deviceprotection',
+       'techsupport', 'streamingtv', 'contract', 'paymentmethod',
+       'monthlycharges', 'totalcharges', 'internet_services_count','churn']
+        
+        df = df[column_oder]
+
         return df 
     except Exception as e:
         logger.error("Unexpected error occured while create a new feature")
-        logger.error(f"Error : {e}")
-
-def data_split(df: pd.DataFrame):
-    """
-    Separates the input features and target variable, 
-    then splits the data into training and testing datasets. 
-    Parameters 
-    ---------- 
-    df : pd.DataFrame Input dataset containing the target column 'churn'.
-    
-    Returns
-    ------- 
-    X_train : pd.DataFrame Training features. 
-    X_test : pd.DataFrame Testing features. 
-    y_train : pd.Series Training target. 
-    y_test : pd.Series Testing target.
-
-    """
-    try:
-
-        # validate target column
-        if 'churn'  not in df.columns:
-            raise ValueError(f"Target column churn is not found in DataFrame")
-
-        # seperate input and output dataset
-        X = df.drop(columns=['churn'])
-        y = df['churn']
-
-        logger.info( f"Input and target data separated successfully. " f"X shape: {X.shape}, y shape: {y.shape}" )
-
-
-        ## Dataset split
-        X_train,X_test,y_train, y_test = train_test_split(X,y,test_size=0.2,stratify=y,random_state=42)
-        logger.info( f"Train/test split completed successfully. " f"X_train: {X_train.shape}, " f"X_test: {X_test.shape}, " f"y_train: {y_train.shape}, " f"y_test: {y_test.shape}" )
-        return X_train,X_test, y_train,y_test
-
-    
-    except Exception as e:
-        logger.error("Unexpected error occured while data splitting")
         logger.error(f"Error : {e}")
 
 
